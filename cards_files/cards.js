@@ -7,10 +7,34 @@ if(window.addEventListener) {
 window.addEventListener('load', function () {
   //GUI stuff
   var canvas, context, canvaso, contexto;
+  var Suits = {
+   "hearts" : 0,
+   "diamonds" : 1,
+   "clubs" : 2,
+   "spades" : 3,
+ };
+
+ var Ranks = {
+   "two" : 2,
+   "three" : 3,
+   "four" : 4,
+   "five" : 5,
+   "six" : 6,
+   "seven" : 7,
+   "eight" : 8,
+   "nine" : 9,
+   "ten" : 10,
+   "jack" : 11,
+   "queen" : 12,
+   "king" : 14,
+   "ace" : 15,
+ };
 
   var colors = {};
   var color;
   var color_default = 'red';
+  colors.white = 'rgb(255,255,255)';
+  colors.black = 'rgb(0,0,0)';
   colors.red   = 'rgb(255,0,0)';
   colors.green = 'rgb(0,255,0)';
   colors.blue  = 'rgb(0,0,255)';
@@ -23,20 +47,20 @@ window.addEventListener('load', function () {
     if (role == 0) {
       this.hand.addCard(
         new Card(
-          'heart',
-          1
+          Suits.hearts,
+          Ranks.ace
         ))
     } else {
       //human
       this.hand.addCard(
         new Card(
-          'diamond',
-          2
+          Suits.hearts,
+          Ranks.two
         ))
       this.hand.addCard(
         new Card(
-          'spade',
-          3
+          Suits.spades,
+          Ranks.three
         ))
     }
   }
@@ -50,6 +74,9 @@ window.addEventListener('load', function () {
   function Card(suit, rank) {
     this.suit = suit;
     this.rank = rank;
+    this.width  = function () { return canvas.width / 5; };
+    this.height = function () { return canvas.height / 3; };
+    //this.width  = canvas.width / 5; this.height = canvas.height / 3; 
   }
 
   function setColor (newColor) {
@@ -132,7 +159,9 @@ window.addEventListener('load', function () {
   }
 
   function drawCards() {
-    var width  = canvas.width / 5;
+    //var width  = canvas.width / 5;
+    //var height = canvas.height / 3;
+    var width  = Card.width;
     var height = canvas.height / 3;
     var spacing = 10;
     var numCards = dealer.hand.cards.length;
@@ -143,7 +172,6 @@ window.addEventListener('load', function () {
     var y = 0;
     context.strokeStyle = color;
     context.fillStyle   = colors.red;
-    //for (var i = 0; i < numCards; i++) {
     for (var i = 0; i < numCards; i++) {
       context.fillRect(x, y, width, height);
       x += (width + spacing);
@@ -155,11 +183,26 @@ window.addEventListener('load', function () {
     x = offset;
     context.strokeStyle = color;
     context.fillStyle   = colors.blue;
-    //for (var i = 0; i < numCards; i++) {
-    for (var i = 0; i < human.hand.cards.length; i++) {
+    for (var i = 0; i < numCards; i++) {
       context.fillRect(x, y, width, height);
       x += (width + spacing);
     }
+  }
+  function drawCard(card, x, y) {
+    var cardColor;
+    switch (card.suit) {
+      case Suits.hearts:
+      case Suits.diamonds:
+        cardColor = colors.red;
+        break;
+      case Suits.clubs:
+      case Suits.spades:
+        cardColor = colors.blue;
+        break;
+    }
+    context.strokeStyle = colors.black;
+    context.fillStyle   = cardColor;
+    context.fillRect(x, y, width, height);
   }
 
   init();
