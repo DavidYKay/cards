@@ -5,21 +5,52 @@
 // Keep everything in anonymous function, called on window load.
 if(window.addEventListener) {
 window.addEventListener('load', function () {
+  //GUI stuff
   var canvas, context, canvaso, contexto;
-
-  // The active tool instance.
-  var tool;
-  var tool_default = 'line';
 
   var colors = {};
   var color;
   var color_default = 'red';
-  //colors.red   = function () { return 'rgb(255,0,0)' };
-  //colors.green = function () { return 'rgb(0,255,0)' };
-  //colors.blue  = function () { return 'rgb(0,0,255)' };
   colors.red   = 'rgb(255,0,0)';
   colors.green = 'rgb(0,255,0)';
   colors.blue  = 'rgb(0,0,255)';
+
+  var dealer = new Player(0);
+  var human  = new Player(1);
+
+  function Player(role) {
+    this.hand = new Hand();
+    if (role == 0) {
+      this.hand.addCard(
+        new Card(
+          'heart',
+          1
+        ))
+    } else {
+      //human
+      this.hand.addCard(
+        new Card(
+          'diamond',
+          2
+        ))
+      this.hand.addCard(
+        new Card(
+          'spade',
+          3
+        ))
+    }
+  }
+  function addCard(newCard) {
+    this.cards.push(newCard);
+  }
+  function Hand() {
+    this.cards = [];
+    this.addCard = addCard;
+  }
+  function Card(suit, rank) {
+    this.suit = suit;
+    this.rank = rank;
+  }
 
   function setColor (newColor) {
     color = newColor;
@@ -33,19 +64,16 @@ window.addEventListener('load', function () {
       alert('Error: I cannot find the canvas element!');
       return;
     }
-
     if (!canvaso.getContext) {
       alert('Error: no canvas.getContext!');
       return;
     }
-
     // Get the 2D canvas context.
     contexto = canvaso.getContext('2d');
     if (!contexto) {
       alert('Error: failed to getContext!');
       return;
     }
-
     // Add the temporary canvas.
     var container = canvaso.parentNode;
     canvas = document.createElement('canvas');
@@ -60,29 +88,8 @@ window.addEventListener('load', function () {
     container.appendChild(canvas);
 
     context = canvas.getContext('2d');
-
-    // Get the tool select input.
-    var tool_select = document.getElementById('dtool');
-    if (!tool_select) {
-      alert('Error: failed to get the dtool element!');
-      return;
-    }
-    tool_select.addEventListener('change', ev_tool_change, false);
     
-    // Get the color select input.
-    var color_select = document.getElementById('dcolor');
-    if (!color_select) {
-      alert('Error: failed to get the dcolor element!');
-      return;
-    }
-    color_select.addEventListener('change', ev_color_change, false);
-
     // Activate the default tool.
-    if (tools[tool_default]) {
-      tool = new tools[tool_default]();
-      tool_select.value = tool_default;
-    }
-
     // Activate the default color.
     if (colors[color_default]) {
       setColor(colors[color_default]);
@@ -105,147 +112,57 @@ window.addEventListener('load', function () {
       ev._y = ev.offsetY;
     }
 
-    // Call the event handler of the tool.
-    var func = tool[ev.type];
-    if (func) {
-      func(ev);
-    }
-  }
-
-  // The event handler for any changes made to the tool selector.
-  function ev_tool_change (ev) {
-    if (tools[this.value]) {
-      tool = new tools[this.value]();
-    }
-  }
-
-  // The event handler for any changes made to the color selector.
-  function ev_color_change (ev) {
-    if (colors[this.value]) {
-      setColor(colors[this.value]);
+    if (ev.type == 'mousedown') {
+      img_update(1);
+    } else if (ev.type == 'mouseup') {
+      img_update(0);
     }
   }
 
   // This function draws the #imageTemp canvas on top of #imageView, after which 
   // #imageTemp is cleared. This function is called each time when the user 
   // completes a drawing operation.
-  function img_update () {
-		contexto.drawImage(canvas, 0, 0);
-		context.clearRect(0, 0, canvas.width, canvas.height);
+  function img_update (down) {
+    //if (up) {
+    //  context.clearRect(0, 0, canvas.width, canvas.height);
+    //} else {
+    //  context.fillRect(0, 0, canvas.width, canvas.height);
+    //}
+    drawCards();
   }
 
-  // This object holds the implementation of each drawing tool.
-  var tools = {};
-
-  // The drawing pencil.
-  tools.pencil = function () {
-    var tool = this;
-    this.started = false;
-
-    // This is called when you start holding down the mouse button.
-    // This starts the pencil drawing.
-    this.mousedown = function (ev) {
-        context.beginPath();
-        context.moveTo(ev._x, ev._y);
-        tool.started = true;
-    };
-
-    // This function is called every time you move the mouse. Obviously, it only 
-    // draws if the tool.started state is set to true (when you are holding down 
-    // the mouse button).
-    this.mousemove = function (ev) {
-      if (tool.started) {
-        context.lineTo(ev._x, ev._y);
-        context.stroke();
-      }
-    };
-
-    // This is called when you release the mouse button.
-    this.mouseup = function (ev) {
-      if (tool.started) {
-        tool.mousemove(ev);
-        tool.started = false;
-        img_update();
-      }
-    };
-  };
-
-  // The rectangle tool.
-  tools.rect = function () {
-    var tool = this;
-    this.started = false;
-
-    this.mousedown = function (ev) {
-      tool.started = true;
-      tool.x0 = ev._x;
-      tool.y0 = ev._y;
-    };
-
-    this.mousemove = function (ev) {
-      if (!tool.started) {
-        return;
-      }
-
-      var x = Math.min(ev._x,  tool.x0),
-          y = Math.min(ev._y,  tool.y0),
-          w = Math.abs(ev._x - tool.x0),
-          h = Math.abs(ev._y - tool.y0);
-
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (!w || !h) {
-        return;
-      }
-
-      context.strokeRect(x, y, w, h);
-    };
-
-    this.mouseup = function (ev) {
-      if (tool.started) {
-        tool.mousemove(ev);
-        tool.started = false;
-        img_update();
-      }
-    };
-  };
-
-  // The line tool.
-  tools.line = function () {
-    var tool = this;
-    this.started = false;
-
-    this.mousedown = function (ev) {
-      tool.started = true;
-      tool.x0 = ev._x;
-      tool.y0 = ev._y;
-    };
-
-    this.mousemove = function (ev) {
-      if (!tool.started) {
-        return;
-      }
-
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      context.beginPath();
-      context.moveTo(tool.x0, tool.y0);
-      context.lineTo(ev._x,   ev._y);
-      //context.strokeStyle = color;
-      context.stroke();
-      context.closePath();
-    };
-
-    this.mouseup = function (ev) {
-      if (tool.started) {
-        tool.mousemove(ev);
-        tool.started = false;
-        img_update();
-      }
-    };
-  };
+  function drawCards() {
+    var width  = canvas.width / 5;
+    var height = canvas.height / 3;
+    var spacing = 10;
+    var numCards = dealer.hand.cards.length;
+    var offset = (canvas.width - (numCards * (width + spacing))) / 2;
+    
+    //Draw his cards
+    var x = offset;
+    var y = 0;
+    context.strokeStyle = color;
+    context.fillStyle   = colors.red;
+    //for (var i = 0; i < numCards; i++) {
+    for (var i = 0; i < numCards; i++) {
+      context.fillRect(x, y, width, height);
+      x += (width + spacing);
+    }
+    //Draw my cards
+    var numCards = human.hand.cards.length;
+    var offset = (canvas.width - (numCards * (width + spacing))) / 2;
+    y = canvas.height - height;
+    x = offset;
+    context.strokeStyle = color;
+    context.fillStyle   = colors.blue;
+    //for (var i = 0; i < numCards; i++) {
+    for (var i = 0; i < human.hand.cards.length; i++) {
+      context.fillRect(x, y, width, height);
+      x += (width + spacing);
+    }
+  }
 
   init();
-
 }, false); }
 
 // vim:set spell spl=en fo=wan1croql tw=80 ts=2 sw=2 sts=2 sta et ai cin fenc=utf-8 ff=unix:
