@@ -181,13 +181,23 @@ window.addEventListener('load', function () {
     if (ev.type == 'mousedown') {
       for (i in buttons) {
         var button = buttons[i];
-      
+        if (
+            ev._x > button.x &&
+            ev._x < (button.x + button.width()) &&
+            ev._y > button.y &&
+            ev._y < (button.y + button.height())
+        ) {
+          button.pressed = true;
+          break;
+        }
       }
-      //img_update(1);
-      
     } else if (ev.type == 'mouseup') {
-      img_update(0);
+      for (i in buttons) {
+        var button = buttons[i];
+        button.pressed = false;
+      }
     }
+    img_update(0);
   }
 
   // This function draws the #imageTemp canvas on top of #imageView, after which 
@@ -208,28 +218,34 @@ window.addEventListener('load', function () {
     this.x = x;
     this.y = y;
     this.draw = drawButton;
+    this.pressed = false;
+    this.width  = function() { return canvas.width / 6; };
+    this.height = function() { return canvas.height / 6; };
   }
 
   function drawButton() {
-    var width  = canvas.width  / 6;
-    var height = canvas.height / 6;
+    if (this.pressed) {
+      context.fillStyle   = colors.black;
+    } else {
+      context.fillStyle   = color;
+    }
     context.fillRect(
       this.x,
       this.y,
-      width,
-      height
+      this.width(),
+      this.height()
     );
     context.strokeRect(
       this.x,
       this.y,
-      width,
-      height
+      this.width(),
+      this.height()
     );
     var textWidth = context.measureText(this.text).width;
     context.strokeText(
       this.text,
-      this.x + (width - textWidth) / 2,
-      this.y + (height / 2)
+      this.x + (this.width() - textWidth) / 2,
+      this.y + (this.height() / 2)
     );
   }
 /******************************************
