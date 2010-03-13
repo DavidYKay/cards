@@ -181,13 +181,7 @@ window.addEventListener('load', function () {
     if (ev.type == 'mousedown') {
       for (i in buttons) {
         var button = buttons[i];
-        if (
-            ev._x > button.x &&
-            ev._x < (button.x + button.width()) &&
-            ev._y > button.y &&
-            ev._y < (button.y + button.height())
-        ) {
-          button.pressed = true;
+        if (button.checkHit(ev)) {
           break;
         }
       }
@@ -221,6 +215,21 @@ window.addEventListener('load', function () {
     this.pressed = false;
     this.width  = function() { return canvas.width / 6; };
     this.height = function() { return canvas.height / 6; };
+    this.checkHit = checkHit;
+  }
+
+  function checkHit(ev) {
+    if (
+        ev._x > this.x &&
+        ev._x < (this.x + this.width()) &&
+        ev._y > this.y &&
+        ev._y < (this.y + this.height())
+    ) {
+      this.pressed = true;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   function drawButton() {
