@@ -48,6 +48,8 @@ window.addEventListener('load', function () {
   //GUI COMPONENTS
   var stayButton;
   var hitButton;
+  //Array to hold all clickable items
+  var buttons;
 
   function Player(role) {
     this.hand = new Hand();
@@ -145,6 +147,7 @@ window.addEventListener('load', function () {
 
     //GUI COMPONENTS
     var buttonHeight = canvas.height / 5;
+    buttons = [];
     stayButton = new Button(
         "Stay",
         10,
@@ -155,6 +158,8 @@ window.addEventListener('load', function () {
         10,
         2.5 * buttonHeight
     );
+    buttons.push(stayButton);
+    buttons.push(hitButton);
 
     // Attach the mousedown, mousemove and mouseup event listeners.
     canvas.addEventListener('mousedown', ev_canvas, false);
@@ -174,7 +179,12 @@ window.addEventListener('load', function () {
     }
 
     if (ev.type == 'mousedown') {
-      img_update(1);
+      for (i in buttons) {
+        var button = buttons[i];
+      
+      }
+      //img_update(1);
+      
     } else if (ev.type == 'mouseup') {
       img_update(0);
     }
@@ -184,16 +194,9 @@ window.addEventListener('load', function () {
   // #imageTemp is cleared. This function is called each time when the user 
   // completes a drawing operation.
   function img_update (down) {
-    //if (up) {
-    //  context.clearRect(0, 0, canvas.width, canvas.height);
-    //} else {
-    //  context.fillRect(0, 0, canvas.width, canvas.height);
-    //}
     drawCards();
     
     var height = canvas.height / 5;
-    //drawButton( 10, 1.5 * height, "Yahoo");
-    //drawButton( 10, 2.5 * height, "Test");
     stayButton.draw();
     hitButton.draw();
   }
