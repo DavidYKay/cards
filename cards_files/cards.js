@@ -50,6 +50,16 @@ window.addEventListener('load', function () {
           Suits.hearts,
           Ranks.ace
         ))
+      this.hand.addCard(
+        new Card(
+          Suits.clubs,
+          Ranks.jack
+        ))
+      this.hand.addCard(
+        new Card(
+          Suits.hearts,
+          Ranks.king
+        ))
     } else {
       //human
       this.hand.addCard(
@@ -61,6 +71,11 @@ window.addEventListener('load', function () {
         new Card(
           Suits.spades,
           Ranks.three
+        ))
+      this.hand.addCard(
+        new Card(
+          Suits.spades,
+          Ranks.nine
         ))
     }
   }
@@ -161,7 +176,8 @@ window.addEventListener('load', function () {
   function drawCards() {
     //var width  = canvas.width / 5;
     //var height = canvas.height / 3;
-    var width  = Card.width;
+    var card = new Card(1, 2);
+    var width  = card.width();
     var height = canvas.height / 3;
     var spacing = 10;
     var numCards = dealer.hand.cards.length;
@@ -172,8 +188,10 @@ window.addEventListener('load', function () {
     var y = 0;
     context.strokeStyle = color;
     context.fillStyle   = colors.red;
-    for (var i = 0; i < numCards; i++) {
-      context.fillRect(x, y, width, height);
+    //for (var i = 0; i < numCards; i++) {
+    for (var i in dealer.hand.cards) {
+      drawCard(dealer.hand.cards[i], x, y);
+      //context.fillRect(x, y, width, height);
       x += (width + spacing);
     }
     //Draw my cards
@@ -183,8 +201,9 @@ window.addEventListener('load', function () {
     x = offset;
     context.strokeStyle = color;
     context.fillStyle   = colors.blue;
-    for (var i = 0; i < numCards; i++) {
-      context.fillRect(x, y, width, height);
+    //for (var i = 0; i < numCards; i++) {
+    for (var i in human.hand.cards) {
+      drawCard(human.hand.cards[i], x, y);
       x += (width + spacing);
     }
   }
@@ -197,12 +216,18 @@ window.addEventListener('load', function () {
         break;
       case Suits.clubs:
       case Suits.spades:
-        cardColor = colors.blue;
+        cardColor = colors.black;
         break;
     }
-    context.strokeStyle = colors.black;
+    context.strokeStyle = cardColor;
     context.fillStyle   = cardColor;
-    context.fillRect(x, y, width, height);
+    //context.fillRect(x, y, card.width(), card.height());
+    context.fillRect(
+        x, 
+        y, 
+        canvas.width / 5,
+        canvas.height / 3
+    );
   }
 
   init();
