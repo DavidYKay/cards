@@ -45,6 +45,10 @@ window.addEventListener('load', function () {
   var dealer = new Player(0);
   var human  = new Player(1);
 
+  //GUI COMPONENTS
+  var stayButton;
+  var hitButton;
+
   function Player(role) {
     this.hand = new Hand();
     if (role == 0) {
@@ -139,6 +143,19 @@ window.addEventListener('load', function () {
       setColor(colors[color_default]);
     }
 
+    //GUI COMPONENTS
+    var buttonHeight = canvas.height / 5;
+    stayButton = new Button(
+        "Stay",
+        10,
+        1.5 * buttonHeight
+    );
+    hitButton  = new Button(
+        "Hit",
+        10,
+        2.5 * buttonHeight
+    );
+
     // Attach the mousedown, mousemove and mouseup event listeners.
     canvas.addEventListener('mousedown', ev_canvas, false);
     canvas.addEventListener('mousemove', ev_canvas, false);
@@ -175,41 +192,46 @@ window.addEventListener('load', function () {
     drawCards();
     
     var height = canvas.height / 5;
-    drawButton(
-        10,
-        1.5 * height,
-        "Yahoo"
-    );
-    drawButton(
-        10,
-        2.5 * height,
-        "Test"
-    );
+    //drawButton( 10, 1.5 * height, "Yahoo");
+    //drawButton( 10, 2.5 * height, "Test");
+    stayButton.draw();
+    hitButton.draw();
+  }
+/******************************************
+ * BUTTON METHODS
+ ******************************************/
+  function Button(text, x, y) {
+    this.text = text;
+    this.x = x;
+    this.y = y;
+    this.draw = drawButton;
   }
 
-  function drawButton(x, y, text) {
-    var width  = canvas.width  / 5;
-    var height = canvas.height / 5;
+  function drawButton() {
+    var width  = canvas.width  / 6;
+    var height = canvas.height / 6;
     context.fillRect(
-      x,
-      y,
+      this.x,
+      this.y,
       width,
       height
     );
     context.strokeRect(
-      x,
-      y,
+      this.x,
+      this.y,
       width,
       height
     );
-    var textWidth = context.measureText(text).width;
+    var textWidth = context.measureText(this.text).width;
     context.strokeText(
-      text,
-      x + (width - textWidth) / 2,
-      y + (height / 2)
+      this.text,
+      this.x + (width - textWidth) / 2,
+      this.y + (height / 2)
     );
   }
-
+/******************************************
+ * CARD METHODS
+ ******************************************/
   function drawCards() {
     var card = new Card(1, 2);
     var width  = card.width();
