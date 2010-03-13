@@ -34,10 +34,13 @@ window.addEventListener('load', function () {
   var color;
   var color_default = 'red';
   colors.white = 'rgb(255,255,255)';
+  colors.grey = 'rgb(127,127,127)';
   colors.black = 'rgb(0,0,0)';
   colors.red   = 'rgb(255,0,0)';
   colors.green = 'rgb(0,255,0)';
   colors.blue  = 'rgb(0,0,255)';
+  colors.purple = 'rgb(127,0,127)';
+  colors.yellow = 'rgb(127,127,0)';
 
   var dealer = new Player(0);
   var human  = new Player(1);
@@ -57,7 +60,7 @@ window.addEventListener('load', function () {
         ))
       this.hand.addCard(
         new Card(
-          Suits.hearts,
+          Suits.diamonds,
           Ranks.king
         ))
     } else {
@@ -74,7 +77,7 @@ window.addEventListener('load', function () {
         ))
       this.hand.addCard(
         new Card(
-          Suits.spades,
+          Suits.diamonds,
           Ranks.nine
         ))
     }
@@ -89,9 +92,8 @@ window.addEventListener('load', function () {
   function Card(suit, rank) {
     this.suit = suit;
     this.rank = rank;
-    this.width  = function () { return canvas.width / 5; };
-    this.height = function () { return canvas.height / 3; };
-    //this.width  = canvas.width / 5; this.height = canvas.height / 3; 
+    this.width  = function () { return canvas.width / 7; };
+    this.height = function () { return canvas.height / 4; };
   }
 
   function setColor (newColor) {
@@ -171,6 +173,41 @@ window.addEventListener('load', function () {
     //  context.fillRect(0, 0, canvas.width, canvas.height);
     //}
     drawCards();
+    
+    var height = canvas.height / 5;
+    drawButton(
+        10,
+        1.5 * height,
+        "Yahoo"
+    );
+    drawButton(
+        10,
+        2.5 * height,
+        "Test"
+    );
+  }
+
+  function drawButton(x, y, text) {
+    var width  = canvas.width  / 5;
+    var height = canvas.height / 5;
+    context.fillRect(
+      x,
+      y,
+      width,
+      height
+    );
+    context.strokeRect(
+      x,
+      y,
+      width,
+      height
+    );
+    var textWidth = context.measureText(text).width;
+    context.strokeText(
+      text,
+      x + (width - textWidth) / 2,
+      y + (height / 2)
+    );
   }
 
   function drawCards() {
@@ -206,18 +243,33 @@ window.addEventListener('load', function () {
     var cardColor;
     switch (card.suit) {
       case Suits.hearts:
+        cardColor = colors.green;
+        break;
       case Suits.diamonds:
         cardColor = colors.red;
         break;
       case Suits.clubs:
+        cardColor = colors.purple;
+        break;
       case Suits.spades:
-        cardColor = colors.blue;
+        cardColor = colors.black;
         break;
     }
-    context.strokeStyle = colors.black;
+    //Draw card
+    context.strokeStyle = colors.yellow;
     context.fillStyle   = cardColor;
     context.fillRect(x, y, card.width(), card.height());
     context.strokeRect(x, y, card.width(), card.height());
+
+    context.strokeStyle = colors.yellow;
+    var text = card.rank.toString();
+    var textWidth = context.measureText(text).width;
+    //Draw number
+    context.strokeText(
+      text,
+      x + (card.width() - textWidth) / 2,
+      y + (card.height() / 2)
+    );
   }
 
   init();
