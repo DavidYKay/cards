@@ -34,7 +34,7 @@ window.addEventListener('load', function () {
   var color;
   var color_default = 'red';
   colors.white = 'rgb(255,255,255)';
-  colors.grey = 'rgb(127,127,127)';
+  colors.grey  = 'rgb(127,127,127)';
   colors.black = 'rgb(0,0,0)';
   colors.red   = 'rgb(255,0,0)';
   colors.green = 'rgb(0,255,0)';
@@ -42,14 +42,60 @@ window.addEventListener('load', function () {
   colors.purple = 'rgb(127,0,127)';
   colors.yellow = 'rgb(127,127,0)';
 
+  //State/Model variables
   var dealer = new Player(0);
   var human  = new Player(1);
+
+  //var shoe = initShoe(1);
 
   //GUI COMPONENTS
   var stayButton;
   var hitButton;
   //Array to hold all clickable items
   var buttons;
+
+/******************************************
+ * MIX-INS
+ ******************************************/
+  //Array.prototype.shuffle = function () { for(var rnd, tmp, i=this.length; i; 
+  //rnd=parseInt(Math.random()*i), tmp=this[--i], this[i]=this[rnd], 
+  //this[rnd]=tmp);
+  //};
+
+/******************************************
+ * MODEL OBJECTS
+ ******************************************/
+
+ function initShoe(numDecks) {
+    var decks = [ ];
+    for (var i = 1; i <= numDecks; i++) {
+      decks.push(new Deck());
+    }
+    for (var i = 1; i < decks.length; i++) {
+      //Squash the decks into one
+      decks[0].concat(
+        decks[i]
+      );
+    }
+    //return decks[0];
+    var cards = decks[0];
+    //cards.shuffle();
+    return cards;
+  }
+
+  function Deck() {
+    this.cards = [ ];
+    for (var i in Suits) {
+      for (var j in Ranks) {
+        this.cards.push(
+          new Card(
+            Suits[i],
+            Ranks[j]
+          )
+        );
+      }
+    }
+  }
 
   function Player(role) {
     this.hand = new Hand();
@@ -107,6 +153,11 @@ window.addEventListener('load', function () {
     context.strokeStyle = color;
     context.fillStyle   = color;
   }
+
+/******************************************
+ * GAME LOGIC
+ ******************************************/
+
   function init () {
     // Find the canvas element.
     canvaso = document.getElementById('imageView');
@@ -165,6 +216,11 @@ window.addEventListener('load', function () {
     canvas.addEventListener('mousedown', ev_canvas, false);
     canvas.addEventListener('mousemove', ev_canvas, false);
     canvas.addEventListener('mouseup',   ev_canvas, false);
+    initGame();
+  }
+
+  function initGame() {
+    x = 1;
   }
 
   // The general-purpose event handler. This function just determines the mouse 
