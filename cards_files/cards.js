@@ -15,19 +15,35 @@ window.addEventListener('load', function () {
  };
 
  var Ranks = {
-   "two" : 2,
+   "two"   : 2,
    "three" : 3,
-   "four" : 4,
-   "five" : 5,
-   "six" : 6,
+   "four"  : 4,
+   "five"  : 5,
+   "six"   : 6,
    "seven" : 7,
    "eight" : 8,
-   "nine" : 9,
-   "ten" : 10,
-   "jack" : 11,
+   "nine"  : 9,
+   "ten"   : 10,
+   "jack"  : 11,
    "queen" : 12,
-   "king" : 14,
-   "ace" : 15,
+   "king"  : 14,
+   "ace"   : 15,
+ };
+
+ var Values = {
+    "2"  : 2,
+    "3"  : 3,
+    "4"  : 4,
+    "5"  : 5,
+    "6"  : 6,
+    "7"  : 7,
+    "8"  : 8,
+    "9"  : 9,
+    "10" : 10,
+    "11" : 10,
+    "12" : 10,
+    "14" : 10,
+    "15" : 10
  };
 
   var colors = {};
@@ -160,6 +176,8 @@ window.addEventListener('load', function () {
   function Card(suit, rank) {
     this.suit = suit;
     this.rank = rank;
+    //this.value = function() { return Values.(this.rank) };
+    this.value = function() { return Values[this.rank] };
     this.width  = function () { return canvas.width / 7; };
     this.height = function () { return canvas.height / 4; };
   }
@@ -175,6 +193,7 @@ window.addEventListener('load', function () {
  ******************************************/
 
   function init () {
+    initGame();
     // Find the canvas element.
     canvaso = document.getElementById('imageView');
     if (!canvaso) {
@@ -218,12 +237,14 @@ window.addEventListener('load', function () {
     stayButton = new Button(
         "Stay",
         10,
-        1.5 * buttonHeight
+        1.5 * buttonHeight,
+        human.stay
     );
     hitButton  = new Button(
         "Hit",
         10,
-        2.5 * buttonHeight
+        2.5 * buttonHeight,
+        function() { human.hit() }
     );
     buttons.push(stayButton);
     buttons.push(hitButton);
@@ -232,7 +253,6 @@ window.addEventListener('load', function () {
     canvas.addEventListener('mousedown', ev_canvas, false);
     canvas.addEventListener('mousemove', ev_canvas, false);
     canvas.addEventListener('mouseup',   ev_canvas, false);
-    initGame();
   }
 
   function initGame() {
@@ -242,20 +262,16 @@ window.addEventListener('load', function () {
     var testCards = prepShoecards(1);
     shoe.renew();
 
-    human.hand.addCard(
-      shoe.getCard()
-    );
     human.hit();
-    dealer.hand.addCard(
-      shoe.getCard()
-    );
+    human.hit();
+    dealer.hit();
     var empty = shoe.isEmpty();
   }
 
   function dealCard(player) {
-      player.hand.addCard(
-        shoe.getCard()
-      );
+    player.hand.addCard(
+      shoe.getCard()
+    );
   }
 
   // The general-purpose event handler. This function just determines the mouse 
@@ -272,7 +288,8 @@ window.addEventListener('load', function () {
     if (ev.type == 'mousedown') {
       for (i in buttons) {
         var button = buttons[i];
-        if (button.checkHit(ev)) {
+        //if (button.checkHit(ev)) {
+        if (button.onClick(ev)) {
           break;
         }
       }
@@ -289,6 +306,8 @@ window.addEventListener('load', function () {
   // #imageTemp is cleared. This function is called each time when the user 
   // completes a drawing operation.
   function img_update (down) {
+    context.fillStyle = colors.white;
+    context.fillRect(0, 0, canvas.width, canvas.height);
     drawCards();
     
     var height = canvas.height / 5;
@@ -298,7 +317,7 @@ window.addEventListener('load', function () {
 /******************************************
  * BUTTON METHODS
  ******************************************/
-  function Button(text, x, y) {
+  function Button(text, x, y, callback) {
     this.text = text;
     this.x = x;
     this.y = y;
@@ -307,6 +326,14 @@ window.addEventListener('load', function () {
     this.width  = function() { return canvas.width / 6; };
     this.height = function() { return canvas.height / 6; };
     this.checkHit = checkHit;
+    this.callback = callback;
+    this.onClick = function(ev) {
+      if (this.checkHit(ev)) {
+        this.callback();
+      } else {
+        return false;
+      }
+    };
   }
 
   function checkHit(ev) {
@@ -403,7 +430,8 @@ window.addEventListener('load', function () {
     context.strokeRect(x, y, card.width(), card.height());
 
     context.strokeStyle = colors.yellow;
-    var text = card.rank.toString();
+    //var text = card.rank.toString();
+    var text = card.value().toString();
     var textWidth = context.measureText(text).width;
     //Draw number
     context.strokeText(
