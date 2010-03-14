@@ -43,10 +43,11 @@ window.addEventListener('load', function () {
   colors.yellow = 'rgb(127,127,0)';
 
   //State/Model variables
-  var dealer = new Player(0);
-  var human  = new Player(1);
+  var dealer;
+  var human ;
 
   //var shoe = initShoe(1);
+  var shoe;
 
   //GUI COMPONENTS
   var stayButton;
@@ -65,11 +66,23 @@ window.addEventListener('load', function () {
 /******************************************
  * MODEL OBJECTS
  ******************************************/
-
- function initShoe(numDecks) {
+  function Shoe(numDecks) {
+    this.cards = [];
+    this.numDecks = numDecks;
+    //this.getCard = function () { return new Card(Suits.hearts, Ranks.two) };
+    this.getCard = function () { return (this.cards.pop()) };
+    //this.getCard = this.cards.pop;
+    this.isEmpty = function () { return (this.cards.length == 0); };
+    this.renew = function () { 
+      this.cards = prepShoecards(this.numDecks);
+    };
+    //Ensure that we have a full shoe of cards to start with
+    //this.renew();
+  }
+  function prepShoecards(numDecks) {
     var decks = [ ];
     for (var i = 1; i <= numDecks; i++) {
-      decks.push(new Deck());
+      decks.push(new Deck().cards);
     }
     for (var i = 1; i < decks.length; i++) {
       //Squash the decks into one
@@ -77,10 +90,7 @@ window.addEventListener('load', function () {
         decks[i]
       );
     }
-    //return decks[0];
-    var cards = decks[0];
-    //cards.shuffle();
-    return cards;
+    return decks[0];
   }
 
   function Deck() {
@@ -98,6 +108,12 @@ window.addEventListener('load', function () {
   }
 
   function Player(role) {
+    this.stay = function () {
+      //Flag as done?
+    }
+    this.hit = function () {
+      dealCard(this);
+    };
     this.hand = new Hand();
     if (role == 0) {
       this.hand.addCard(
@@ -115,7 +131,7 @@ window.addEventListener('load', function () {
           Suits.diamonds,
           Ranks.king
         ))
-    } else {
+    } else if (role == 1) {
       //human
       this.hand.addCard(
         new Card(
@@ -220,7 +236,26 @@ window.addEventListener('load', function () {
   }
 
   function initGame() {
-    x = 1;
+    dealer = new Player(2);
+    human  = new Player(2);
+    shoe   = new Shoe(1);
+    var testCards = prepShoecards(1);
+    shoe.renew();
+
+    human.hand.addCard(
+      shoe.getCard()
+    );
+    human.hit();
+    dealer.hand.addCard(
+      shoe.getCard()
+    );
+    var empty = shoe.isEmpty();
+  }
+
+  function dealCard(player) {
+      player.hand.addCard(
+        shoe.getCard()
+      );
   }
 
   // The general-purpose event handler. This function just determines the mouse 
