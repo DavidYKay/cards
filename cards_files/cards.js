@@ -61,8 +61,6 @@ window.addEventListener('load', function () {
   //State/Model variables
   var dealer;
   var human ;
-
-  //var shoe = initShoe(1);
   var shoe;
 
   //GUI COMPONENTS
@@ -74,9 +72,9 @@ window.addEventListener('load', function () {
 /******************************************
  * MIX-INS
  ******************************************/
-  //Array.prototype.shuffle = function () { for(var rnd, tmp, i=this.length; i; 
-  //rnd=parseInt(Math.random()*i), tmp=this[--i], this[i]=this[rnd], 
-  //this[rnd]=tmp);
+  //Array.prototype.shuffle = function () { for(var rnd, tmp, i=this.length;
+  // i;
+  // rnd=parseInt(Math.random()*i), tmp=this[--i], this[i]=this[rnd], this[rnd]=tmp);
   //};
 
 /******************************************
@@ -345,7 +343,7 @@ window.addEventListener('load', function () {
  * MISC GUI
  ******************************************/
   function drawScore(player) {
-    var text = player.getScore();
+    var text = "Score: " + player.getScore();
     var x;
     var y;
     if (player == dealer) {
@@ -439,7 +437,7 @@ window.addEventListener('load', function () {
     
     //Draw his cards
     var x = offset;
-    var y = 0;
+    var y = spacing;
     context.strokeStyle = color;
     context.fillStyle   = colors.red;
     for (var i in dealer.hand.cards) {
@@ -449,7 +447,7 @@ window.addEventListener('load', function () {
     //Draw my cards
     var numCards = human.hand.cards.length;
     var offset = (canvas.width - (numCards * (width + spacing))) / 2;
-    y = canvas.height - height;
+    y = (canvas.height - height) - spacing;
     x = offset;
     context.strokeStyle = color;
     context.fillStyle   = colors.blue;
