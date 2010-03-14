@@ -130,6 +130,17 @@ window.addEventListener('load', function () {
     this.hit = function () {
       dealCard(this);
     };
+    this.getScore = function () {
+      //Sum up the values of the cards
+      var sum = 0;
+      for (var i in this.hand.cards) {
+        var card = this.hand.cards[i];
+        //sum += card.value();
+        var value = card.value();
+        sum += value;
+      }
+      return sum;
+    }
     this.hand = new Hand();
     if (role == 0) {
       this.hand.addCard(
@@ -176,7 +187,6 @@ window.addEventListener('load', function () {
   function Card(suit, rank) {
     this.suit = suit;
     this.rank = rank;
-    //this.value = function() { return Values.(this.rank) };
     this.value = function() { return Values[this.rank] };
     this.width  = function () { return canvas.width / 7; };
     this.height = function () { return canvas.height / 4; };
@@ -249,6 +259,22 @@ window.addEventListener('load', function () {
     buttons.push(stayButton);
     buttons.push(hitButton);
 
+    //DEBUG ONLY
+    var dealerStayButton = new Button(
+        "DealerStay",
+        350,
+        1.5 * buttonHeight,
+        function() { dealer.stay() }
+    );
+    var dealerHitButton  = new Button(
+        "DealerHit",
+        350,
+        2.5 * buttonHeight,
+        function() { dealer.hit() }
+    );
+    buttons.push(dealerStayButton);
+    buttons.push(dealerHitButton);
+
     // Attach the mousedown, mousemove and mouseup event listeners.
     canvas.addEventListener('mousedown', ev_canvas, false);
     canvas.addEventListener('mousemove', ev_canvas, false);
@@ -259,10 +285,8 @@ window.addEventListener('load', function () {
     dealer = new Player(2);
     human  = new Player(2);
     shoe   = new Shoe(1);
-    var testCards = prepShoecards(1);
     shoe.renew();
 
-    human.hit();
     human.hit();
     dealer.hit();
     var empty = shoe.isEmpty();
@@ -310,9 +334,35 @@ window.addEventListener('load', function () {
     context.fillRect(0, 0, canvas.width, canvas.height);
     drawCards();
     
-    var height = canvas.height / 5;
-    stayButton.draw();
-    hitButton.draw();
+    for (var i in buttons) {
+      buttons[i].draw();
+    }
+    //scores
+    drawScore(dealer);
+    drawScore(human);
+  }
+/******************************************
+ * MISC GUI
+ ******************************************/
+  function drawScore(player) {
+    var text = player.getScore();
+    var x;
+    var y;
+    if (player == dealer) {
+      x = 100;
+      y = 50;
+    } else {
+      x = 100;
+      y = 250;
+    }
+    context.font = '30 sans-serif';
+    context.strokeStyle = colors.black;
+    var textWidth = context.measureText(this.text).width;
+    context.strokeText(
+      text,
+      x - (textWidth / 2),
+      y 
+    );
   }
 /******************************************
  * BUTTON METHODS
@@ -354,8 +404,9 @@ window.addEventListener('load', function () {
     if (this.pressed) {
       context.fillStyle   = colors.black;
     } else {
-      context.fillStyle   = color;
+      context.fillStyle   = colors.red;
     }
+    context.strokeStyle = colors.yellow;
     context.fillRect(
       this.x,
       this.y,
