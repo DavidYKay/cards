@@ -170,7 +170,11 @@ window.addEventListener('load', function () {
         var value = card.value();
         sum += value;
       }
-      return sum;
+      if (sum > 21) {
+        return 0;
+      } else {
+        return sum;
+      }
     }
     this.hand = new Hand();
     if (role == 0) {
@@ -279,13 +283,19 @@ window.addEventListener('load', function () {
         "Stay",
         10,
         1.5 * buttonHeight,
-        human.stay
+        function() { 
+          human.stay();
+          dealerMove();
+        }
     );
     hitButton  = new Button(
         "Hit",
         10,
         2.5 * buttonHeight,
-        function() { human.hit() }
+        function() { 
+          human.hit();
+          dealerMove();
+        }
     );
     buttons.push(stayButton);
     buttons.push(hitButton);
@@ -303,8 +313,15 @@ window.addEventListener('load', function () {
         2.5 * buttonHeight,
         function() { dealer.hit() }
     );
+    var nextTurnButton  = new Button(
+        "Next Turn",
+        300,
+        3.5 * buttonHeight,
+        function() { endTurn() }
+    );
     buttons.push(dealerStayButton);
     buttons.push(dealerHitButton);
+    buttons.push(nextTurnButton);
 
     // Attach the mousedown, mousemove and mouseup event listeners.
     canvas.addEventListener('mousedown', ev_canvas, false);
@@ -323,11 +340,33 @@ window.addEventListener('load', function () {
     var empty = shoe.isEmpty();
   }
 
+  function endTurn() {
+    //Resolve winner
+    if (human.getScore() > dealer.getScore()) {
+      debugger
+    } else {
+
+    }
+  }
+
+  function dealerMove() {
+    var score = dealer.getScore();
+    if (score < 17 && score != 0) {
+      dealer.hit();
+    } else {
+      dealer.stay();
+    }
+  }
+
   function dealCard(player) {
     player.hand.addCard(
       shoe.getCard()
     );
   }
+
+  /******************************************
+ * EVENTS
+ ******************************************/
 
   // The general-purpose event handler. This function just determines the mouse 
   // position relative to the canvas element.
@@ -379,7 +418,11 @@ window.addEventListener('load', function () {
  ******************************************/
 
   function drawScore(player) {
-    var text = "Score: " + player.getScore();
+    var score = player.getScore();
+    if (score == 0) {
+      score = "Bust";
+    }
+    var text = "Score: " + score;
     var x;
     var y;
     if (player == dealer) {
