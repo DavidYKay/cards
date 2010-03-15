@@ -347,8 +347,11 @@ window.addEventListener('load', function () {
     //Resolve winner
     if (human.getScore() > dealer.getScore()) {
       human.purse += pot;
-    } else {
+    } else if (dealer.getScore() > human.getScore()) {
       dealer.purse += pot;
+    } else {
+      //Push
+      //Return their bets
     }
     //Clear the cards
     human.hand.cards  = [ ];
@@ -442,6 +445,20 @@ window.addEventListener('load', function () {
     context.font = '30 sans-serif';
     context.strokeStyle = colors.black;
     context.fillStyle   = colors.white;
+    var textWidth = context.measureText(this.text).width;
+    context.strokeText(
+      text,
+      x - (textWidth / 2),
+      y 
+    );
+    context.fillText(
+      text,
+      x - (textWidth / 2),
+      y 
+    );
+
+    y += 30;
+    text = "Purse: " + player.purse;
     var textWidth = context.measureText(this.text).width;
     context.strokeText(
       text,
