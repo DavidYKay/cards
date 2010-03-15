@@ -90,6 +90,39 @@ window.addEventListener('load', function () {
     this.renew = function () { 
       this.cards = prepShoecards(this.numDecks);
     };
+    this.draw = function () {
+      var x = 430;
+      var y = 150;
+      var card = new Card();
+      context.fillRect(
+        x - (card.width() / 2),
+        y - (card.height() / 2),
+        card.width(),
+        card.height()
+      );
+      context.strokeRect(
+        x - (card.width() / 2),
+        y - (card.height() / 2),
+        card.width(),
+        card.height()
+      );
+
+      var text = "SHOE: " + (this.cards.length.toString());
+      context.font = '30 sans-serif';
+      context.strokeStyle = colors.black;
+      context.fillStyle   = colors.white;
+      var textWidth = context.measureText(this.text).width;
+      context.strokeText(
+        text,
+        x - (textWidth / 2),
+        y 
+      );
+      context.fillText(
+        text,
+        x - (textWidth / 2),
+        y 
+      );
+    };
     //Ensure that we have a full shoe of cards to start with
     //this.renew();
   }
@@ -260,13 +293,13 @@ window.addEventListener('load', function () {
     //DEBUG ONLY
     var dealerStayButton = new Button(
         "DealerStay",
-        350,
+        300,
         1.5 * buttonHeight,
         function() { dealer.stay() }
     );
     var dealerHitButton  = new Button(
         "DealerHit",
-        350,
+        300,
         2.5 * buttonHeight,
         function() { dealer.hit() }
     );
@@ -338,10 +371,13 @@ window.addEventListener('load', function () {
     //scores
     drawScore(dealer);
     drawScore(human);
+
+    shoe.draw();
   }
 /******************************************
  * MISC GUI
  ******************************************/
+
   function drawScore(player) {
     var text = "Score: " + player.getScore();
     var x;
@@ -355,8 +391,14 @@ window.addEventListener('load', function () {
     }
     context.font = '30 sans-serif';
     context.strokeStyle = colors.black;
+    context.fillStyle   = colors.white;
     var textWidth = context.measureText(this.text).width;
     context.strokeText(
+      text,
+      x - (textWidth / 2),
+      y 
+    );
+    context.fillText(
       text,
       x - (textWidth / 2),
       y 
