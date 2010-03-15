@@ -176,6 +176,7 @@ window.addEventListener('load', function () {
         return sum;
       }
     }
+    this.purse = 100;
     this.hand = new Hand();
     if (role == 0) {
       this.hand.addCard(
@@ -335,18 +336,24 @@ window.addEventListener('load', function () {
     shoe   = new Shoe(1);
     shoe.renew();
 
-    human.hit();
-    dealer.hit();
-    var empty = shoe.isEmpty();
+    beginTurn();
   }
-
+  function beginTurn() {
+    dealCard(human);
+    dealCard(dealer);
+  }
   function endTurn() {
+    var pot = 10;
     //Resolve winner
     if (human.getScore() > dealer.getScore()) {
-      debugger
+      human.purse += pot;
     } else {
-
+      dealer.purse += pot;
     }
+    //Clear the cards
+    human.hand.cards  = [ ];
+    dealer.hand.cards = [ ];
+    beginTurn();
   }
 
   function dealerMove() {
