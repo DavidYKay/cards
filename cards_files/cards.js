@@ -459,33 +459,22 @@ window.addEventListener('load', function () {
       x = 100;
       y = 250;
     }
-    context.font = '30 sans-serif';
-    context.strokeStyle = colors.black;
-    context.fillStyle   = colors.white;
-    var textWidth = context.measureText(this.text).width;
-    context.strokeText(
+    drawText(
+      x,
+      y,
       text,
-      x - (textWidth / 2),
-      y 
-    );
-    context.fillText(
-      text,
-      x - (textWidth / 2),
-      y 
+      colors.black,
+      colors.white
     );
 
     y += 30;
     text = "Purse: " + player.purse;
-    var textWidth = context.measureText(this.text).width;
-    context.strokeText(
+    drawText(
+      x,
+      y,
       text,
-      x - (textWidth / 2),
-      y 
-    );
-    context.fillText(
-      text,
-      x - (textWidth / 2),
-      y 
+      colors.black,
+      colors.white
     );
   }
 /******************************************
@@ -549,11 +538,12 @@ window.addEventListener('load', function () {
 
   function drawButton() {
     if (this.pressed) {
-      context.fillStyle   = colors.black;
+      context.fillStyle   = colors.white;
     } else {
-      context.fillStyle   = colors.red;
+      context.fillStyle   = colors.yellow;
     }
-    context.strokeStyle = colors.yellow;
+    //context.strokeStyle = colors.yellow;
+    context.strokeStyle = colors.black;
     context.fillRect(
       this.x,
       this.y,
