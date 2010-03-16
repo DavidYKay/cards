@@ -157,9 +157,14 @@ window.addEventListener('load', function () {
   }
 
   function Player(role) {
+    this.bet = function (amount) {
+      this.purse -= amount;
+      pot += amount;
+    };
     this.stay = function () {
-      //Flag as done?
-    }
+      //Flag as done?"
+      this.done = true;
+    };
     this.hit = function () {
       dealCard(this);
     };
@@ -343,11 +348,12 @@ window.addEventListener('load', function () {
     beginTurn();
   }
   function beginTurn() {
+    human.bet(10);
+    dealer.bet(10);
     dealCard(human);
     dealCard(dealer);
   }
   function endTurn() {
-    var pot = 10;
     //Resolve winner
     if (human.getScore() > dealer.getScore()) {
       human.purse += pot;
@@ -356,7 +362,10 @@ window.addEventListener('load', function () {
     } else {
       //Push
       //Return their bets
+      dealer.purse += pot / 2;
+      human.purse += pot / 2;
     }
+    pot = 0;
     //Clear the cards
     human.hand.cards  = [ ];
     dealer.hand.cards = [ ];
