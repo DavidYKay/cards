@@ -62,6 +62,8 @@ window.addEventListener('load', function () {
   var dealer;
   var human ;
   var shoe;
+  
+  var pot; //currently an int
 
   //GUI COMPONENTS
   var stayButton;
@@ -91,7 +93,7 @@ window.addEventListener('load', function () {
       this.cards = prepShoecards(this.numDecks);
     };
     this.draw = function () {
-      var x = 430;
+      var x = 330;
       var y = 150;
       var card = new Card();
       context.fillRect(
@@ -304,19 +306,19 @@ window.addEventListener('load', function () {
     //DEBUG ONLY
     var dealerStayButton = new Button(
         "DealerStay",
-        300,
+        380,
         1.5 * buttonHeight,
         function() { dealer.stay() }
     );
     var dealerHitButton  = new Button(
         "DealerHit",
-        300,
+        380,
         2.5 * buttonHeight,
         function() { dealer.hit() }
     );
     var nextTurnButton  = new Button(
         "Next Turn",
-        300,
+        380,
         3.5 * buttonHeight,
         function() { endTurn() }
     );
@@ -335,6 +337,8 @@ window.addEventListener('load', function () {
     human  = new Player(2);
     shoe   = new Shoe(1);
     shoe.renew();
+
+    pot = 0;
 
     beginTurn();
   }
@@ -422,10 +426,23 @@ window.addEventListener('load', function () {
     drawScore(human);
 
     shoe.draw();
+    drawPot();
   }
 /******************************************
  * MISC GUI
  ******************************************/
+  function drawPot() {
+    var text = "Pot: " + pot;
+    var x = 200;
+    var y = 200;
+     drawText(
+      x,
+      y,
+      text,
+      colors.black,
+      colors.white
+     );
+  }
 
   function drawScore(player) {
     var score = player.getScore();
@@ -471,6 +488,29 @@ window.addEventListener('load', function () {
       y 
     );
   }
+/******************************************
+ * GUI UTIL
+ ******************************************/
+  function drawText(x, y, text, strokeStyle, fillStyle) {
+    context.strokeStyle = strokeStyle;
+    context.fillStyle   = fillStyle;
+    drawText(x, y, text);
+  }
+  function drawText(x, y, text) {
+    context.font = '30 sans-serif';
+    var textWidth = context.measureText(this.text).width;
+    context.strokeText(
+      text,
+      x - (textWidth / 2),
+      y 
+    );
+    context.fillText(
+      text,
+      x - (textWidth / 2),
+      y 
+    );
+  }
+
 /******************************************
  * BUTTON METHODS
  ******************************************/
