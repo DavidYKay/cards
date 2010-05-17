@@ -93,8 +93,8 @@ window.addEventListener('load', function () {
       this.cards = prepShoecards(this.numDecks);
     };
     this.draw = function () {
-      var x = 330;
-      var y = 150;
+      var x = 420;
+      var y = 200;
       var card = new Card();
       context.fillRect(
         x - (card.width() / 2),
@@ -312,19 +312,19 @@ window.addEventListener('load', function () {
     var dealerStayButton = new Button(
         "DealerStay",
         380,
-        1.5 * buttonHeight,
+        0.25 * buttonHeight,
         function() { dealer.stay() }
     );
     var dealerHitButton  = new Button(
         "DealerHit",
         380,
-        2.5 * buttonHeight,
+        1.25 * buttonHeight,
         function() { dealer.hit() }
     );
     var nextTurnButton  = new Button(
         "Next Turn",
         380,
-        3.5 * buttonHeight,
+        4.0 * buttonHeight,
         function() { endTurn() }
     );
     buttons.push(dealerStayButton);
@@ -363,7 +363,7 @@ window.addEventListener('load', function () {
       //Push
       //Return their bets
       dealer.purse += pot / 2;
-      human.purse += pot / 2;
+      human.purse  += pot / 2;
     }
     pot = 0;
     //Clear the cards
@@ -442,8 +442,9 @@ window.addEventListener('load', function () {
  ******************************************/
   function drawPot() {
     var text = "Pot: " + pot;
-    var x = 200;
-    var y = 200;
+    //var x = 200;
+    var x = canvas.width / 2;
+    var y = canvas.height / 2;
      drawText(
       x,
       y,
@@ -462,10 +463,10 @@ window.addEventListener('load', function () {
     var x;
     var y;
     if (player == dealer) {
-      x = 100;
+      x = 50;
       y = 50;
     } else {
-      x = 100;
+      x = 50;
       y = 250;
     }
     drawText(
